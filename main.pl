@@ -26,11 +26,21 @@ sub powerset {
     @_ ? map { $_, [$_[0], @$_] } powerset(@_[1..$#_]) : [];
 }
 
+=head1 Is Fifteen
+Checks if one given hand adds up to 15
+=cut
+sub is_fifteen {
+    sum(map { $_-> valuate } @_) == 15
+}
+
+=head1 Check Fifteen
+Finds every possible way to make 15 from a hand of cards
+=cut
 sub check_fifteen {
     my @result;
 
     for my $set (powerset(@_)) {
-        if (@$set && sum(map { $_-> valuate } @$set) == 15) {
+        if (@$set && is_fifteen(@$set)) {
             push @result, $set;
         }
     }
