@@ -11,15 +11,13 @@ use List::Util qw(reduce sum);
 use Card;
 
 use constant {
-    FIFTEEN    => 2,
-    PAIR       => 2,
-    TRIPLET    => 6,
-    QUAD       => 12,
-    FLUSH4     => 4,
-    FLUSH5     => 5,
-    NOB        => 1,
-    THIRTY_ONE => 2,
-    GO         => 2,
+    SCORE_FIFTEEN => 2,
+    SCORE_PAIR    => 2,
+    SCORE_TRIPLET => 6,
+    SCORE_QUAD    => 12,
+    SCORE_FLUSH4  => 4,
+    SCORE_FLUSH5  => 5,
+    SCORE_NOB     => 1,
 };
 
 
