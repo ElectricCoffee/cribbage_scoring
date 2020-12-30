@@ -15,6 +15,9 @@ sub new {
     bless {%args}, $class;
 }
 
+=head1 From Str
+Converts a string to a Card object
+=cut
 sub from_str {
     my $class = shift;
     my $str = shift;
@@ -47,6 +50,9 @@ sub from_str {
     return $class->new(suit => $suit, value => $value);
 }
 
+=head1 To Str
+Converts the card object to a human readable string
+=cut
 sub to_str() {
     my $this = shift;
 
@@ -77,7 +83,9 @@ sub to_str() {
     return "$value of $suit";
 }
 
-# id gets a short string form of the card for easy comparison.
+=head1 ID 
+Gets a short string form of the card for easy comparison.
+=cut
 sub id() {
     my $this = shift;
     return $this->value . $this->suit;
@@ -86,10 +94,12 @@ sub id() {
 sub suit()  { shift->{suit}  }
 sub value() { shift->{value} }
 
-# Valuate gets the numerical value of a card
-#   A = 1
-#   # = #
-# JQK = 10
+=head1 Valuate 
+Gets the numerical value of a card
+  A = 1
+  # = #
+JQK = 10
+=cut
 sub valuate() {
     given (shift->value) {
         return 1  when m/\ba\b/i;
