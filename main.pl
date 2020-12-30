@@ -48,6 +48,26 @@ sub check_fifteen {
     @result;
 }
 
+=head1 Same Rank
+Checks if all the cards in the given set share the same rank
+=cut
+sub same_rank {
+    my @ranks = map { $_->value } @_;
+    return 0 unless @ranks;
+
+    @ranks == grep { $ranks[0] eq $_ } @ranks;
+}
+
+=head1 Same Suit
+Checks if all the cards in the given set share the same suit
+=cut
+sub same_suit {
+    my @suits = map { $_->suit } @_;
+    return 0 unless @suits;
+
+    @suits == grep { $suits[0] eq $_ } @suits;
+}
+
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HQ);
 
 my $top_card = Card->from_str('C7');
