@@ -6,7 +6,7 @@ use v5.28;
 use warnings;
 use autodie;
 no warnings 'experimental::smartmatch';
-use List::Util qw(reduce sum);
+use List::Util qw(reduce sum all);
 
 use Card;
 
@@ -58,7 +58,7 @@ sub same_cards(&@) {
     my @cards = map $func->($_), @_;
     return 0 unless @cards;
 
-    @cards == grep { $cards[0] eq $_ } @cards;
+    all { $cards[0] eq $_ } @cards;
 }
 
 =head1 Is Pair
@@ -108,12 +108,24 @@ sub check_flush {
     }
 }
 
-my @hand = map { Card->from_str($_) } qw(C4 H4 SA HQ);
+=head1 Check Nob
+Checks to see if the hand has a Nob in it.
+I.e. a Jack of the same suit as the starter.
+=cut
+sub check_nob {
+    my @hand = @{+shift};
+    my $starter = shift;
 
-my $top_card = Card->from_str('C7');
+    grep { $_->value =~ m/j/i && $_->suit eq $starter->suit } @hand;
+}
+
+my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
+
+my $top_card = Card->from_str('H7');
 
 my @results = check_fifteen(@hand, $top_card);
 my @pairs = check_pair(@hand, $top_card);
+my @nob = check_nob(\@hand, $top_card);
 
 say "given a hand containing @{[@hand, $top_card]}:";
 
@@ -126,3 +138,5 @@ for my $cards (@pairs) {
     local $" = ' and ';
     say "@$cards make a pair";
 }
+
+say "The hand has @nob as a nob";
