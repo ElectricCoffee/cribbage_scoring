@@ -48,45 +48,38 @@ sub check_fifteen {
     @result;
 }
 
-=head1 Same Rank
-Checks if all the cards in the given set share the same rank
+=head1 Same Cards
+Checks if the cards are the same given some criterium.
+The criterium is supplied as a block.
+For example, `same_cards { $_->suit } @cards` will check if all the cards share suit.
 =cut
-sub same_rank {
-    my @ranks = map { $_->value } @_;
-    return 0 unless @ranks;
+sub same_cards(&@) {
+    my $func = shift;
+    my @cards = map $func->($_), @_;
+    return 0 unless @cards;
 
-    @ranks == grep { $ranks[0] eq $_ } @ranks;
-}
-
-=head1 Same Suit
-Checks if all the cards in the given set share the same suit
-=cut
-sub same_suit {
-    my @suits = map { $_->suit } @_;
-    return 0 unless @suits;
-
-    @suits == grep { $suits[0] eq $_ } @suits;
+    @cards == grep { $cards[0] eq $_ } @cards;
 }
 
 =head1 Is Pair
 Checks if a given number of cards are a pair
 =cut
 sub is_pair {
-    @_ == 2 && same_rank @_;
+    @_ == 2 && same_cards { $_->value } @_;
 }
 
 =head1 Is Triplet
 Checks if a given number of cards are a triplet (three of a kind)
 =cut
 sub is_triplet {
-    @_ == 3 && same_rank @_;
+    @_ == 3 && same_cards { $_->value } @_;
 }
 
 =head1 Is Quad
 Checks if a given number of cards are a quad (four of a kind)
 =cut
 sub is_quad {
-    @_ == 4 && same_rank @_;
+    @_ == 4 && same_cards { $_->value } @_;
 }
 
 sub check_pair {
@@ -106,9 +99,9 @@ sub check_flush {
     my @hand = @{+shift};
     my $starter = shift;
 
-    if (same_suit(@hand, $starter)) {
+    if (same_cards { $_->suit } (@hand, $starter)) {
         return (@hand, $starter);
-    } elsif (same_suit(@hand)) {
+    } elsif (same_cards { $_->suit } @hand) {
         return @hand;
     } else {
         return ();
