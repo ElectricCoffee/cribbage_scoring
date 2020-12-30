@@ -102,6 +102,19 @@ sub check_triplet {} # should be included in pair?
 
 sub check_quad {} # should be included in pair?
 
+sub check_flush {
+    my @hand = @{+shift};
+    my $starter = shift;
+
+    if (same_suit(@hand, $starter)) {
+        return (@hand, $starter);
+    } elsif (same_suit(@hand)) {
+        return @hand;
+    } else {
+        return ();
+    }
+}
+
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HQ);
 
 my $top_card = Card->from_str('C7');
