@@ -68,15 +68,55 @@ sub same_suit {
     @suits == grep { $suits[0] eq $_ } @suits;
 }
 
+=head1 Is Pair
+Checks if a given number of cards are a pair
+=cut
+sub is_pair {
+    @_ == 2 && same_rank @_;
+}
+
+=head1 Is Triplet
+Checks if a given number of cards are a triplet (three of a kind)
+=cut
+sub is_triplet {
+    @_ == 3 && same_rank @_;
+}
+
+=head1 Is Quad
+Checks if a given number of cards are a quad (four of a kind)
+=cut
+sub is_quad {
+    @_ == 4 && same_rank @_;
+}
+
+sub check_pair {
+    my @result;
+
+    for my $set (powerset(@_)) {
+        push @result, $set if is_pair @$set;
+    }
+    @result;
+}
+
+sub check_triplet {} # should be included in pair?
+
+sub check_quad {} # should be included in pair?
+
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HQ);
 
 my $top_card = Card->from_str('C7');
 
 my @results = check_fifteen(@hand, $top_card);
+my @pairs = check_pair(@hand, $top_card);
 
 say "given a hand containing @{[@hand, $top_card]}:";
 
 for my $cards (@results) {
     local $" = ' + ';
     say "@$cards = 15";
+}
+
+for my $cards (@pairs) {
+    local $" = ' and ';
+    say "@$cards make a pair";
 }
