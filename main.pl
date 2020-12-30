@@ -20,8 +20,10 @@ use constant {
     SCORE_NOB     => 1,
 };
 
-
-# lifted off of rosetta code
+=head1 Powerset
+Creates a powerset from an array reference.
+This code was lifted off of Rosetta Code
+=cut
 sub powerset {
     @_ ? map { $_, [$_[0], @$_] } powerset(@_[1..$#_]) : [];
 }
@@ -30,7 +32,7 @@ sub powerset {
 Checks if one given hand adds up to 15
 =cut
 sub is_fifteen {
-    sum(map { $_-> valuate } @_) == 15
+    sum(map { $_->valuate } @_) == 15
 }
 
 =head1 Check Fifteen
@@ -65,21 +67,21 @@ sub same_cards(&@) {
 Checks if a given number of cards are a pair
 =cut
 sub is_pair {
-    @_ == 2 && same_cards { $_->value } @_;
+    @_ == 2 && same_cards { $_->rank } @_;
 }
 
 =head1 Is Triplet
 Checks if a given number of cards are a triplet (three of a kind)
 =cut
 sub is_triplet {
-    @_ == 3 && same_cards { $_->value } @_;
+    @_ == 3 && same_cards { $_->rank } @_;
 }
 
 =head1 Is Quad
 Checks if a given number of cards are a quad (four of a kind)
 =cut
 sub is_quad {
-    @_ == 4 && same_cards { $_->value } @_;
+    @_ == 4 && same_cards { $_->rank } @_;
 }
 
 sub check_pair {
@@ -116,7 +118,7 @@ sub check_nob {
     my @hand = @{+shift};
     my $starter = shift;
 
-    grep { $_->value =~ m/j/i && $_->suit eq $starter->suit } @hand;
+    grep { $_->rank =~ m/j/i && $_->suit eq $starter->suit } @hand;
 }
 
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);

@@ -23,31 +23,31 @@ sub from_str {
     my $str = shift;
 
     my $suit;
-    my $value;
+    my $rank;
 
     given ($str) {
         when (m/([chsd])(a|10|\d|[jqk])/i) {
             $suit  = $1; 
-            $value = $2;
+            $rank = $2;
         }
 
         when (m/(a|10|\d|[jqk])([chsd])/i) {
             $suit  = $2; 
-            $value = $1;
+            $rank = $1;
         }
 
         when (m/(ace|10|\d|jack|queen|king) of (clubs|hearts|spades|diamonds)/i) {
             $suit  = substr($2, 0, 1); # just grab the first letter
-            $value = $1;
-            $value = substr($value, 0, 1) unless $value =~ m/\d+/;
+            $rank = $1;
+            $rank = substr($rank, 0, 1) unless $rank =~ m/\d+/;
         }
 
         default {
-            croak "Did not understand the string $str. Format must be either SV or Value of Suit.";
+            croak "Did not understand the string $str. Format must be either SV or Rank of Suit.";
         }
     }
 
-    return $class->new(suit => $suit, value => $value);
+    return $class->new(suit => $suit, rank => $rank);
 }
 
 =head1 To Str
@@ -57,7 +57,7 @@ sub to_str() {
     my $this = shift;
 
     my $suit;
-    my $value;
+    my $rank;
 
     given ($this->suit) {
         $suit = 'Clubs'    when m/c/i;
@@ -69,18 +69,18 @@ sub to_str() {
         }
     }
 
-    given ($this->value) {
-        $value = $_      when m/\d+/i;
-        $value = 'Ace'   when m/a/i;
-        $value = 'Jack'  when m/j/i;
-        $value = 'Queen' when m/q/i;
-        $value = 'King'  when m/k/i;
+    given ($this->rank) {
+        $rank = $_      when m/\d+/i;
+        $rank = 'Ace'   when m/a/i;
+        $rank = 'Jack'  when m/j/i;
+        $rank = 'Queen' when m/q/i;
+        $rank = 'King'  when m/k/i;
         default {
-            croak "Did not recognise the value $_.";
+            croak "Did not recognise the rank $_.";
         }
     }
 
-    return "$value of $suit";
+    return "$rank of $suit";
 }
 
 =head1 ID 
@@ -88,11 +88,11 @@ Gets a short string form of the card for easy comparison.
 =cut
 sub id() {
     my $this = shift;
-    return $this->value . $this->suit;
+    return $this->rank . $this->suit;
 }
 
-sub suit()  { shift->{suit}  }
-sub value() { shift->{value} }
+sub suit() { shift->{suit} }
+sub rank() { shift->{rank} }
 
 =head1 Valuate 
 Gets the numerical value of a card
@@ -101,13 +101,13 @@ Gets the numerical value of a card
 JQK = 10
 =cut
 sub valuate() {
-    given (shift->value) {
+    given (shift->rank) {
         return 1  when m/\ba\b/i;
         return $_ when m/\b[2-9]\b/i;
         return 10 when m/\b10|[jqk]\b/i;
 
         default {
-            croak "The value $_ is not a valid card value";
+            croak "The rank $_ is not a valid card rank";
         }
     }
 }
