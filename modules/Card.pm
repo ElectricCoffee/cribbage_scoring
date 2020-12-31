@@ -7,7 +7,9 @@ no warnings 'experimental::smartmatch';
 use List::Util qw(reduce sum);
 
 use Carp;
-use overload '""' => \&to_str; # enables string interpolation
+use overload 
+    '""'  => \&to_str,  # enables string interpolation
+    '<=>' => \&compare; # overloads the <=> operator and gives <, <=, ==, >=, and > for free
 
 sub new {
     my $class = shift;
@@ -110,6 +112,37 @@ sub valuate() {
             croak "The rank $_ is not a valid card rank";
         }
     }
+}
+
+=head1 Order
+Helper function to determine rank ordering
+=cut
+sub _rank_order {
+    my $rank = shift;
+
+    given ($rank) {
+        return 1 when m/a/i;
+        return $_ when m/10|[2-9]/;
+        return 11 when m/j/i;
+        return 12 when m/q/i;
+        return 13 when m/k/i;
+        default {
+            croak "Did not recognise the rank $_";
+        }
+    }
+}
+
+=head1 Compare
+Compares the ranks of two cards, on a tie it compares the suits.
+Returns -1, 0, or 1 like cmp normally does
+=cut
+sub compare {
+    my $this = shift;
+    my $that = shift;
+
+    my $comparison = $this->rank_order <=> $that->rank_order;
+
+    $comparison ? $comparison : ($this->suit cmp $that->suit);
 }
 
 1;
