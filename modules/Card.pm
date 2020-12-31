@@ -4,7 +4,6 @@ use v5.28;
 use warnings;
 use autodie;
 no warnings 'experimental::smartmatch';
-use List::Util qw(reduce sum);
 
 use Carp;
 use overload 

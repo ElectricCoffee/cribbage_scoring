@@ -3,8 +3,7 @@ package Subset;
 use v5.28;
 use warnings;
 use autodie;
-no warnings 'experimental::smartmatch';
-use List::Util qw(reduce sum);
+use List::Util qw(sum);
 
 use Exporter 'import';
 use Util;

@@ -3,8 +3,7 @@ package Util;
 use v5.28;
 use warnings;
 use autodie;
-no warnings 'experimental::smartmatch';
-use List::Util qw(reduce sum all);
+use List::Util qw(all);
 
 use Exporter 'import';
 
