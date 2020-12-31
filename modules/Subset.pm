@@ -5,7 +5,6 @@ use warnings;
 use autodie;
 use List::Util qw(sum);
 
-use Exporter 'import';
 use Util;
 
 =head1 Is Fifteen

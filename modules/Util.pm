@@ -5,8 +5,6 @@ use warnings;
 use autodie;
 use List::Util qw(all);
 
-use Exporter 'import';
-
 =head1 Same Cards
 Checks if the cards are the same given some criterium.
 The criterium is supplied as a block.
