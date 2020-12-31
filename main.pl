@@ -28,6 +28,21 @@ sub powerset {
     @_ ? map { $_, [$_[0], @$_] } powerset(@_[1..$#_]) : [];
 }
 
+=head1 Is Subset
+Checks if one array is a subset of another.
+This code was lifted off of Ilmari Karonen's answer on Stack Overflow
+=cut
+sub is_subset {
+    my ($small_set, $big_set) = @_;
+    my %hash;
+
+    undef @hash{@$small_set}; # set all keys to undef;
+    # remove all the keys contained in the big set
+    delete @hash{@$big_set}; 
+    # if any remain, it means the small set contained things not in the big set
+    return !%hash;
+}
+
 =head1 Is Fifteen
 Checks if one given hand adds up to 15
 =cut
