@@ -114,13 +114,15 @@ sub valuate() {
     }
 }
 
-=head1 Order
-Helper function to determine rank ordering
+=head1 Rank Order
+Helper function to determine rank ordering.
+Note that this is not the same as getting the value of the order.
+The value of a court card is always 10, but for the purpose of ordering, court cards are > 10
 =cut
-sub _rank_order {
-    my $rank = shift;
+sub rank_order {
+    my $this = shift;
 
-    given ($rank) {
+    given ($this->rank) {
         return 1 when m/a/i;
         return $_ when m/10|[2-9]/;
         return 11 when m/j/i;
