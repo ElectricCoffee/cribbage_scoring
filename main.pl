@@ -50,6 +50,27 @@ sub check_fifteen {
     @result;
 }
 
+=head1 Is Run
+Checks if a given set of cards is a run.
+Runs are defined by a given ordering of cards being 1 off from each other.
+Also known as Straights in Poker
+=cut
+sub is_run {
+    return 0 if @_ < 3; # runs can only be 3 or longer;
+
+    my @ordered = sort { $a <=> $b } @_;
+    my $last_card;
+
+    for my $card (@ordered) {
+        next unless defined $last_card;
+        return 0 if $card->rank_order - $last_card->rank_order != 1;
+    } continue {
+        $last_card = $card; 
+    }
+
+    return 1;
+}
+
 =head1 Same Cards
 Checks if the cards are the same given some criterium.
 The criterium is supplied as a block.
@@ -121,6 +142,29 @@ sub check_nob {
     grep { $_->rank =~ m/j/i && $_->suit eq $starter->suit } @hand;
 }
 
+sub check_hand {
+    my $hand = shift;
+    my $starter = shift;
+
+    my @fifteens;
+    my @pairs;
+    my @triplets;
+    my @quads;
+    my @runs;
+    my @flush = check_flush $hand, $starter;
+    my ($nob) = check_nob $hand, $starter;
+
+    for my $set (powerset(@$hand, $starter)) {
+        next if @$set < 2; # just skip the sets with fewer than 2 cards
+
+        push @fifteens, $set    if is_fifteen @$set;
+        push @pairs, $set       if is_pair @$set;
+        push @triplets, $set    if is_triplet @$set;
+        push @quads, $set       if is_quad @$set;
+        push @runs, $set        if is_run @$set;
+    }
+}
+
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
 
 my $top_card = Card->from_str('H7');
@@ -142,3 +186,7 @@ for my $cards (@pairs) {
 }
 
 say "The hand has @nob as a nob";
+
+my @run = map { Card->from_str($_)} qw(HA H2 H3 H4);
+say "@run is a run" if is_run @run;
+say "@run is not a run" unless is_run @run;
