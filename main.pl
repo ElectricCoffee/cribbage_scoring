@@ -9,6 +9,8 @@ no warnings 'experimental::smartmatch';
 use List::Util qw(reduce sum all);
 
 use Card;
+use Subset;
+use Util;
 
 use constant {
     SCORE_FIFTEEN => 2,
@@ -20,44 +22,14 @@ use constant {
     SCORE_NOB     => 1,
 };
 
-=head1 Powerset
-Creates a powerset from an array reference.
-This code was lifted off of Rosetta Code
-=cut
-sub powerset {
-    @_ ? map { $_, [$_[0], @$_] } powerset(@_[1..$#_]) : [];
-}
-
-=head1 Is Subset
-Checks if one array is a subset of another.
-This code was lifted off of Ilmari Karonen's answer on Stack Overflow
-=cut
-sub is_subset {
-    my ($small_set, $big_set) = @_;
-    my %hash;
-
-    undef @hash{@$small_set}; # set all keys to undef;
-    # remove all the keys contained in the big set
-    delete @hash{@$big_set}; 
-    # if any remain, it means the small set contained things not in the big set
-    return !%hash;
-}
-
-=head1 Is Fifteen
-Checks if one given hand adds up to 15
-=cut
-sub is_fifteen {
-    sum(map { $_->valuate } @_) == 15
-}
-
 =head1 Check Fifteen
 Finds every possible way to make 15 from a hand of cards
 =cut
 sub check_fifteen {
     my @result;
 
-    for my $set (powerset(@_)) {
-        if (@$set && is_fifteen(@$set)) {
+    for my $set (Util::powerset(@_)) {
+        if (@$set && Subset::is_fifteen(@$set)) {
             push @result, $set;
         }
     }
@@ -65,81 +37,22 @@ sub check_fifteen {
     @result;
 }
 
-=head1 Is Run
-Checks if a given set of cards is a run.
-Runs are defined by a given ordering of cards being 1 off from each other.
-Also known as Straights in Poker
-=cut
-sub is_run {
-    return 0 if @_ < 3; # runs can only be 3 or longer;
-
-    my @ordered = sort { $a <=> $b } @_;
-    my $last_card;
-
-    for my $card (@ordered) {
-        next unless defined $last_card;
-        return 0 if $card->rank_order - $last_card->rank_order != 1;
-    } continue {
-        $last_card = $card; 
-    }
-
-    return 1;
-}
-
-=head1 Same Cards
-Checks if the cards are the same given some criterium.
-The criterium is supplied as a block.
-For example, `same_cards { $_->suit } @cards` will check if all the cards share suit.
-=cut
-sub same_cards(&@) {
-    my $func = shift;
-    my @cards = map $func->($_), @_;
-    return 0 unless @cards;
-
-    all { $cards[0] eq $_ } @cards;
-}
-
-=head1 Is Pair
-Checks if a given number of cards are a pair
-=cut
-sub is_pair {
-    @_ == 2 && same_cards { $_->rank } @_;
-}
-
-=head1 Is Triplet
-Checks if a given number of cards are a triplet (three of a kind)
-=cut
-sub is_triplet {
-    @_ == 3 && same_cards { $_->rank } @_;
-}
-
-=head1 Is Quad
-Checks if a given number of cards are a quad (four of a kind)
-=cut
-sub is_quad {
-    @_ == 4 && same_cards { $_->rank } @_;
-}
-
 sub check_pair {
     my @result;
 
-    for my $set (powerset(@_)) {
-        push @result, $set if is_pair @$set;
+    for my $set (Util::powerset(@_)) {
+        push @result, $set if Subset::is_pair @$set;
     }
     @result;
 }
-
-sub check_triplet {} # should be included in pair?
-
-sub check_quad {} # should be included in pair?
 
 sub check_flush {
     my @hand = @{+shift};
     my $starter = shift;
 
-    if (same_cards { $_->suit } (@hand, $starter)) {
+    if (Util::same_cards { $_->suit } (@hand, $starter)) {
         return (@hand, $starter);
-    } elsif (same_cards { $_->suit } @hand) {
+    } elsif (Util::same_cards { $_->suit } @hand) {
         return @hand;
     } else {
         return ();
@@ -172,11 +85,11 @@ sub check_hand {
     for my $set (powerset(@$hand, $starter)) {
         next if @$set < 2; # just skip the sets with fewer than 2 cards
 
-        push @fifteens, $set    if is_fifteen @$set;
-        push @pairs, $set       if is_pair @$set;
-        push @triplets, $set    if is_triplet @$set;
-        push @quads, $set       if is_quad @$set;
-        push @runs, $set        if is_run @$set;
+        push @fifteens, $set    if Subset::is_fifteen @$set;
+        push @pairs, $set       if Subset::is_pair @$set;
+        push @triplets, $set    if Subset::is_triplet @$set;
+        push @quads, $set       if Subset::is_quad @$set;
+        push @runs, $set        if Subset::is_run @$set;
     }
 }
 
@@ -203,5 +116,5 @@ for my $cards (@pairs) {
 say "The hand has @nob as a nob";
 
 my @run = map { Card->from_str($_)} qw(HA H2 H3 H4);
-say "@run is a run" if is_run @run;
-say "@run is not a run" unless is_run @run;
+say "@run is a run"     if Subset::is_run @run;
+say "@run is not a run" unless Subset::is_run @run;
