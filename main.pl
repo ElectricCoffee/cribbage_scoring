@@ -9,14 +9,13 @@ use autodie;
 use Card;
 use Subset;
 use Util;
+use List::Util qw(sum);
 
 use constant {
     SCORE_FIFTEEN => 2,
     SCORE_PAIR    => 2,
     SCORE_TRIPLET => 6,
     SCORE_QUAD    => 12,
-    SCORE_FLUSH4  => 4,
-    SCORE_FLUSH5  => 5,
     SCORE_NOB     => 1,
 };
 
@@ -115,12 +114,18 @@ sub print_scores {
         return;
     }
 
+    # NB: each key stores an array ref of point scoring hands
+    # this array ref needs to be unwrapped first.
     my @list_of_sets = $result{$key}->@*;
 
     my $count = @list_of_sets;
     my $repr = Util::stringify_sets @list_of_sets;
 
-    say "$count $key ($repr) totalling ", $value * $count;
+    my $score = $value eq 'COUNT' 
+        ? sum map { scalar @$_ } @list_of_sets
+        : $value * $count;
+
+    say "$count $key ($repr) totalling ", $score;
 }
 
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
