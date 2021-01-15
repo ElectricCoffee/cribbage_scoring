@@ -20,6 +20,10 @@ use constant {
     SCORE_NOB     => 1,
 };
 
+=head1 Check Flush
+Checks if a set contains a flush and extracts a copy of it.
+If no flush is present, then an empty list is returned.
+=cut
 sub check_flush {
     my @hand = @{+shift};
     my $starter = shift;
