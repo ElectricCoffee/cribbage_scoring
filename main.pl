@@ -58,19 +58,50 @@ sub check_hand {
     my @flush = check_flush $hand, $starter;
     my ($nob) = check_nob $hand, $starter;
 
-    for my $set (powerset(@$hand, $starter)) {
+    my @power_set = Util::powerset(@$hand, $starter);
+
+    for my $set (sort { @$b <=> @$a } @power_set) {
         next if @$set < 2; # just skip the sets with fewer than 2 cards
 
         push @fifteens, $set    if Subset::is_fifteen @$set;
-        push @pairs, $set       if Subset::is_pair @$set;
-        push @triplets, $set    if Subset::is_triplet @$set;
         push @quads, $set       if Subset::is_quad @$set;
-        push @runs, $set        if Subset::is_run @$set;
-    }
-}
 
+        push @triplets, $set    
+            if Subset::is_triplet @$set 
+            && !Util::subset_of_any($set, @quads);
+        push @pairs, $set
+            if Subset::is_pair @$set 
+            && (!Util::subset_of_any($set, @quads) || !Util::subset_of_any($set, @triplets));
+
+        if (Subset::is_run @$set && !Util::subset_of_any($set, @runs)) {
+            push @runs, $set;
+        }
+    }
+
+    my %result;
+    $result{fifteens} = \@fifteens  if @fifteens;
+    $result{pairs} = \@pairs        if @pairs;
+    $result{triplets} = \@triplets  if @triplets;
+    $result{quads} = \@quads        if @quads;
+    $result{runs} = \@runs          if @runs;
+    $result{flush} = \@flush        if @flush;
+    $result{nob} = $nob             if $nob;
+
+    #say Dumper(\%result);
+    %result;
+}
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
 
 my $top_card = Card->from_str('H7');
 
 say "given a hand containing @{[@hand, $top_card]}:";
+
+__END__
+=head1 Ideas and Optimisations
+=head2 Single Traversal
+Order the powerset by length, so that you always start with the longest sets.
+Then, progress through the algorithm as normal, but then check if the shorter sets are part of the longer ones.
+If they are, don't include them in the list.
+
+This has the obvious benefit of simply not having to filter out the duplicate entries after the fact, as they simply aren't included in the first place.
+=cut
