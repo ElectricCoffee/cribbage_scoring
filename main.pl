@@ -95,7 +95,17 @@ sub check_hand {
     %result;
 }
 
-sub print_cards {
+=head1 Print Scores
+Prints the scores given by a hand, based upon a specific key.
+It takes the following parameters:
+=item $key
+    which is one of the keys for the hash returned by check_hand
+=item $value 
+    which is the point value of each scored set, or the special value 'COUNT', which counts the cards.
+=item %result
+    which is the remainder of the argument list, containing all the results given by check_hand
+=cut
+sub print_scores {
     my $key = shift;
     my $value = shift;
     my %result = @_;
@@ -121,10 +131,11 @@ say "given a hand containing @{[@hand, $top_card]}:";
 
 my %result = check_hand(\@hand, $top_card);
 
-print_cards('fifteens', SCORE_FIFTEEN, %result);
-print_cards('pairs', SCORE_PAIR, %result);
-print_cards('triplets', SCORE_TRIPLET, %result);
-print_cards('quads', SCORE_QUAD, %result);
+print_scores('fifteens', SCORE_FIFTEEN, %result);
+print_scores('pairs', SCORE_PAIR, %result);
+print_scores('triplets', SCORE_TRIPLET, %result);
+print_scores('quads', SCORE_QUAD, %result);
+print_scores('runs', 'COUNT', %result);
 
 __END__
 =head1 Ideas and Optimisations
