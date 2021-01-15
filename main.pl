@@ -90,11 +90,43 @@ sub check_hand {
     #say Dumper(\%result);
     %result;
 }
+
+sub stringify_sets {
+    my @sets = @_;
+
+    join ', ', map { '[' . join(', ', @$_) . ']' } @sets;
+}
+
+sub print_cards {
+    my $key = shift;
+    my $value = shift;
+    my %result = @_;
+    
+    unless (defined $result{$key}) {
+        say "No $key found.";
+        return;
+    }
+
+    my @list_of_sets = $result{$key}->@*;
+
+    my $count = @list_of_sets;
+    my $repr = stringify_sets @list_of_sets;
+
+    say "$count $key ($repr) totalling ", $value * $count;
+}
+
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
 
 my $top_card = Card->from_str('H7');
 
 say "given a hand containing @{[@hand, $top_card]}:";
+
+my %result = check_hand(\@hand, $top_card);
+
+print_cards('fifteens', SCORE_FIFTEEN, %result);
+print_cards('pairs', SCORE_PAIR, %result);
+print_cards('triplets', SCORE_TRIPLET, %result);
+print_cards('quads', SCORE_QUAD, %result);
 
 __END__
 =head1 Ideas and Optimisations
