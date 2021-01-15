@@ -113,9 +113,11 @@ sub print_scores {
     my $value = shift;
     my %result = @_;
     
-    unless (defined $result{$key}) {
-        say "No $key found.";
-        return;
+    return 0 unless defined $result{$key};
+
+    if ($key eq 'nob') {
+        say "Nobs ($result{$key}) for $value pt.";
+        return $value;
     }
 
     # NB: each key stores an array ref of point scoring hands
