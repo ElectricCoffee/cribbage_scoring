@@ -131,7 +131,7 @@ sub print_scores {
         ? sum map { scalar @$_ } @list_of_sets
         : $value * $count;
 
-    say "$count $key ($repr) totalling ", $score;
+    say "$count $key: \n\t- $repr \ntotalling $score pt.";
 }
 
 my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
