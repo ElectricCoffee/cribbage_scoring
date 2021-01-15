@@ -73,24 +73,4 @@ my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
 
 my $top_card = Card->from_str('H7');
 
-my @results = check_fifteen(@hand, $top_card);
-my @pairs = check_pair(@hand, $top_card);
-my @nob = check_nob(\@hand, $top_card);
-
 say "given a hand containing @{[@hand, $top_card]}:";
-
-for my $cards (@results) {
-    local $" = ' + ';
-    say "@$cards = 15";
-}
-
-for my $cards (@pairs) {
-    local $" = ' and ';
-    say "@$cards make a pair";
-}
-
-say "The hand has @nob as a nob";
-
-my @run = map { Card->from_str($_)} qw(HA H2 H3 H4);
-say "@run is a run"     if Subset::is_run @run;
-say "@run is not a run" unless Subset::is_run @run;
