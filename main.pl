@@ -49,6 +49,10 @@ sub check_nob {
     grep { $_->rank =~ m/j/i && $_->suit eq $starter->suit } @hand;
 }
 
+=head1 Check Hand
+Goes through the entire hand and the starter and checks it for all point scoring features.
+It then returns a hash containing its findings
+=cut
 sub check_hand {
     my $hand = shift;
     my $starter = shift;
@@ -66,19 +70,19 @@ sub check_hand {
     for my $set (sort { @$b <=> @$a } @power_set) {
         next if @$set < 2; # just skip the sets with fewer than 2 cards
 
-        push @fifteens, $set    if Subset::is_fifteen @$set;
-        push @quads, $set       if Subset::is_quad @$set;
+        push @fifteens, $set    if Subset::is_fifteen(@$set);
+        push @quads, $set       if Subset::is_quad(@$set);
 
         push @triplets, $set    
-            if Subset::is_triplet @$set 
+            if Subset::is_triplet(@$set)
             && !Util::subset_of_any($set, @quads);
         push @pairs, $set
-            if Subset::is_pair @$set 
+            if Subset::is_pair(@$set) 
             && (!Util::subset_of_any($set, @quads) || !Util::subset_of_any($set, @triplets));
 
-        if (Subset::is_run @$set && !Util::subset_of_any($set, @runs)) {
-            push @runs, $set;
-        }
+        push @runs, $set 
+            if (Subset::is_run(@$set) 
+            && !Util::subset_of_any($set, @runs))
     }
 
     my %result;
