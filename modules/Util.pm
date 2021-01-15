@@ -41,4 +41,19 @@ sub is_subset {
     return !%hash;
 }
 
+=head1 Subset of Any
+Checks if the given set is the subset of any of the other sets.
+If it is, the function returns 1, otherwise it returns undef.
+=cut
+sub subset_of_any {
+    my $subset = shift;
+    my @sets   = @_;
+
+    for my $set (@sets) {
+        return 1 if is_subset($subset, $set);
+    }
+
+    return undef;
+}
+
 1;
