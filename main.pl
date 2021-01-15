@@ -48,9 +48,11 @@ sub check_flush {
     my @hand = @{+shift};
     my $starter = shift;
 
-    if (Util::same_cards { $_->suit } (@hand, $starter)) {
-        return (@hand, $starter);
-    } elsif (Util::same_cards { $_->suit } @hand) {
+    if (Util::same_cards { $_->suit } @hand) {
+        if ($hand[0]->suit eq $starter->suit) {
+            return (@hand, $starter);
+        }
+        
         return @hand;
     } else {
         return ();
