@@ -20,30 +20,6 @@ use constant {
     SCORE_NOB     => 1,
 };
 
-=head1 Check Fifteen
-Finds every possible way to make 15 from a hand of cards
-=cut
-sub check_fifteen {
-    my @result;
-
-    for my $set (Util::powerset(@_)) {
-        if (@$set && Subset::is_fifteen(@$set)) {
-            push @result, $set;
-        }
-    }
-
-    @result;
-}
-
-sub check_pair {
-    my @result;
-
-    for my $set (Util::powerset(@_)) {
-        push @result, $set if Subset::is_pair @$set;
-    }
-    @result;
-}
-
 sub check_flush {
     my @hand = @{+shift};
     my $starter = shift;
