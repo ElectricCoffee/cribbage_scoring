@@ -56,4 +56,13 @@ sub subset_of_any {
     return undef;
 }
 
+=head1 Stringify Sets
+Helper function to stringify the sets of point scoring hands given
+=cut
+sub stringify_sets {
+    my @sets = @_;
+
+    join ', ', map { '[' . join(', ', @$_) . ']' } @sets;
+}
+
 1;

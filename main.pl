@@ -95,12 +95,6 @@ sub check_hand {
     %result;
 }
 
-sub stringify_sets {
-    my @sets = @_;
-
-    join ', ', map { '[' . join(', ', @$_) . ']' } @sets;
-}
-
 sub print_cards {
     my $key = shift;
     my $value = shift;
@@ -114,7 +108,7 @@ sub print_cards {
     my @list_of_sets = $result{$key}->@*;
 
     my $count = @list_of_sets;
-    my $repr = stringify_sets @list_of_sets;
+    my $repr = Util::stringify_sets @list_of_sets;
 
     say "$count $key ($repr) totalling ", $value * $count;
 }
