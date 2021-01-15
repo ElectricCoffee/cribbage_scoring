@@ -76,9 +76,11 @@ sub check_hand {
         push @triplets, $set    
             if Subset::is_triplet(@$set)
             && !Util::subset_of_any($set, @quads);
+
         push @pairs, $set
             if Subset::is_pair(@$set) 
-            && (!Util::subset_of_any($set, @quads) || !Util::subset_of_any($set, @triplets));
+            && !Util::subset_of_any($set, @quads) 
+            && !Util::subset_of_any($set, @triplets);
 
         push @runs, $set 
             if (Subset::is_run(@$set) 
