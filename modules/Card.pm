@@ -1,20 +1,18 @@
 package Card;
+use Moo;
 
 use v5.28;
 use warnings;
 use autodie;
 no warnings 'experimental::smartmatch';
-
 use Carp;
+
 use overload 
     '""'  => \&to_str,  # enables string interpolation
     '<=>' => \&compare; # overloads the <=> operator and gives <, <=, ==, >=, and > for free
 
-sub new {
-    my $class = shift;
-    my %args = @_;
-    bless {%args}, $class;
-}
+has suit => (is => 'ro');
+has rank => (is => 'ro');
 
 =head1 From Str
 Converts a string to a Card object
@@ -92,9 +90,6 @@ sub id() {
     return $this->rank . $this->suit;
 }
 
-sub suit() { shift->{suit} }
-sub rank() { shift->{rank} }
-
 =head1 Valuate 
 Gets the numerical value of a card
   A = 1
@@ -143,7 +138,7 @@ sub compare {
 
     my $comparison = $this->rank_order <=> $that->rank_order;
 
-    $comparison ? $comparison : ($this->suit cmp $that->suit);
+    $comparison || ($this->suit cmp $that->suit);
 }
 
 1;
