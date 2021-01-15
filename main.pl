@@ -134,21 +134,34 @@ sub print_scores {
         : $value * $count;
 
     say "$count $key: \n\t- $repr \ntotalling $score pt.";
+    return $score;
 }
 
-my @hand = map { Card->from_str($_) } qw(C4 H4 SA HJ);
+my @hand = map { Card->from_str($_) } qw(C5 H5 S5 HJ);
 
-my $top_card = Card->from_str('H7');
+my $top_card = Card->from_str('H5');
 
 say "given a hand containing @{[@hand, $top_card]}:";
 
 my %result = check_hand(\@hand, $top_card);
 
-print_scores('fifteens', SCORE_FIFTEEN, %result);
-print_scores('pairs', SCORE_PAIR, %result);
-print_scores('triplets', SCORE_TRIPLET, %result);
-print_scores('quads', SCORE_QUAD, %result);
-print_scores('runs', 'COUNT', %result);
+my %scoring = (
+    fifteens    => SCORE_FIFTEEN,
+    pairs       => SCORE_PAIR,
+    triplets    => SCORE_TRIPLET,
+    quads       => SCORE_QUAD,
+    runs        => 'COUNT',
+    flush       => 'COUNT',
+    nob         => SCORE_NOB,
+);
+
+my $score;
+
+for my $key (sort keys %scoring) {
+    $score += print_scores($key, $scoring{$key}, %result);
+}
+
+say "Total score: $score";
 
 __END__
 =head1 Ideas and Optimisations
