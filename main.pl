@@ -9,6 +9,7 @@ use autodie;
 use Card;
 use Subset;
 use Util;
+use Hand;
 use List::Util qw(sum);
 
 use constant {
@@ -18,87 +19,6 @@ use constant {
     SCORE_QUAD    => 12,
     SCORE_NOB     => 1,
 };
-
-=head1 Check Flush
-Checks if a set contains a flush and extracts a copy of it.
-If no flush is present, then an empty list is returned.
-=cut
-sub check_flush {
-    my @hand = @{+shift};
-    my $starter = shift;
-
-    if (Util::same_cards { $_->suit } @hand) {
-        if ($hand[0]->suit eq $starter->suit) {
-            return (@hand, $starter);
-        }
-        
-        return @hand;
-    } else {
-        return ();
-    }
-}
-
-=head1 Check Nob
-Checks to see if the hand has a Nob in it.
-I.e. a Jack of the same suit as the starter.
-=cut
-sub check_nob {
-    my @hand = @{+shift};
-    my $starter = shift;
-
-    grep { $_->rank =~ m/j/i && $_->suit eq $starter->suit } @hand;
-}
-
-=head1 Check Hand
-Goes through the entire hand and the starter and checks it for all point scoring features.
-It then returns a hash containing its findings
-=cut
-sub check_hand {
-    my $hand = shift;
-    my $starter = shift;
-
-    my @fifteens;
-    my @pairs;
-    my @triplets;
-    my @quads;
-    my @runs;
-    my @flush = check_flush $hand, $starter;
-    my ($nob) = check_nob $hand, $starter;
-
-    my @power_set = Util::powerset(@$hand, $starter);
-
-    for my $set (sort { @$b <=> @$a } @power_set) {
-        next if @$set < 2; # just skip the sets with fewer than 2 cards
-
-        push @fifteens, $set    if Subset::is_fifteen(@$set);
-        push @quads, $set       if Subset::is_quad(@$set);
-
-        push @triplets, $set    
-            if Subset::is_triplet(@$set)
-            && !Util::subset_of_any($set, @quads);
-
-        push @pairs, $set
-            if Subset::is_pair(@$set) 
-            && !Util::subset_of_any($set, @quads) 
-            && !Util::subset_of_any($set, @triplets);
-
-        push @runs, $set 
-            if (Subset::is_run(@$set) 
-            && !Util::subset_of_any($set, @runs))
-    }
-
-    my %result;
-    $result{fifteens} = \@fifteens  if @fifteens;
-    $result{pairs} = \@pairs        if @pairs;
-    $result{triplets} = \@triplets  if @triplets;
-    $result{quads} = \@quads        if @quads;
-    $result{runs} = \@runs          if @runs;
-    $result{flush} = \@flush        if @flush;
-    $result{nob} = $nob             if $nob;
-
-    #say Dumper(\%result);
-    %result;
-}
 
 =head1 Print Scores
 Prints the scores given by a hand, based upon a specific key.
@@ -111,9 +31,7 @@ It takes the following parameters:
     which is the remainder of the argument list, containing all the results given by check_hand
 =cut
 sub print_scores {
-    my $key = shift;
-    my $value = shift;
-    my %result = @_;
+    my ($key, $value, %result) = @_;
     
     return 0 unless defined $result{$key};
 
@@ -137,13 +55,13 @@ sub print_scores {
     return $score;
 }
 
-my @hand = map { Card->from_str($_) } qw(C5 H5 S5 HJ);
+my $hand = Hand->from_str("5H 4S 3D 4H + 5D");
 
-my $top_card = Card->from_str('H5');
+my $hand_string = join ', ', $hand->hand->@*;
 
-say "given a hand containing @{[@hand, $top_card]}:";
+say "Given a hand containing $hand_string, and a(n) ", $hand->starter, ":";
 
-my %result = check_hand(\@hand, $top_card);
+my %result = $hand->check;
 
 my %scoring = (
     fifteens    => SCORE_FIFTEEN,
@@ -161,7 +79,7 @@ for my $key (sort keys %scoring) {
     $score += print_scores($key, $scoring{$key}, %result);
 }
 
-say "Total score: $score";
+say "Total score: $score pt.";
 
 __END__
 =head1 Ideas and Optimisations

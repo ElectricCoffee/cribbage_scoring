@@ -26,12 +26,12 @@ sub from_str {
 
     given ($str) {
         when (m/([chsd])(a|10|\d|[jqk])/i) {
-            $suit  = $1; 
+            $suit  = $1;
             $rank = $2;
         }
 
         when (m/(a|10|\d|[jqk])([chsd])/i) {
-            $suit  = $2; 
+            $suit  = $2;
             $rank = $1;
         }
 
@@ -113,7 +113,7 @@ Helper function to determine rank ordering.
 Note that this is not the same as getting the value of the order.
 The value of a court card is always 10, but for the purpose of ordering, court cards are > 10
 =cut
-sub rank_order {
+sub rank_order() {
     my $this = shift;
 
     given ($this->rank) {
