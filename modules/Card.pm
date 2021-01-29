@@ -18,8 +18,7 @@ has rank => (is => 'ro');
 Converts a string to a Card object
 =cut
 sub from_str {
-    my $class = shift;
-    my $str = shift;
+    my ($class, $str) = @_;
 
     my $suit;
     my $rank;
@@ -53,7 +52,7 @@ sub from_str {
 Converts the card object to a human readable string
 =cut
 sub to_str() {
-    my $this = shift;
+    my ($this) = @_;
 
     my $suit;
     my $rank;
@@ -86,7 +85,7 @@ sub to_str() {
 Gets a short string form of the card for easy comparison.
 =cut
 sub id() {
-    my $this = shift;
+    my ($this) = @_;
     return $this->rank . $this->suit;
 }
 
@@ -114,7 +113,7 @@ Note that this is not the same as getting the value of the order.
 The value of a court card is always 10, but for the purpose of ordering, court cards are > 10
 =cut
 sub rank_order() {
-    my $this = shift;
+    my ($this) = @_;
 
     given ($this->rank) {
         return 1 when m/a/i;
@@ -133,8 +132,7 @@ Compares the ranks of two cards, on a tie it compares the suits.
 Returns -1, 0, or 1 like cmp normally does
 =cut
 sub compare {
-    my $this = shift;
-    my $that = shift;
+    my ($this, $that) = @_;
 
     my $comparison = $this->rank_order <=> $that->rank_order;
 

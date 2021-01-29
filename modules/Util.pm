@@ -11,8 +11,8 @@ The criterium is supplied as a block.
 For example, `same_cards { $_->suit } @cards` will check if all the cards share suit.
 =cut
 sub same_cards(&@) {
-    my $func = shift;
-    my @cards = map $func->($_), @_;
+    my ($func, @set) = @_;
+    my @cards = map $func->($_), @set;
     return 0 unless @cards;
 
     all { $cards[0] eq $_ } @cards;
@@ -46,8 +46,7 @@ Checks if the given set is the subset of any of the other sets.
 If it is, the function returns 1, otherwise it returns undef.
 =cut
 sub subset_of_any {
-    my $subset = shift;
-    my @sets   = @_;
+    my ($subset, @sets) = @_;
 
     for my $set (@sets) {
         return 1 if is_subset($subset, $set);
@@ -60,9 +59,7 @@ sub subset_of_any {
 Helper function to stringify the sets of point scoring hands given
 =cut
 sub stringify_sets {
-    my @sets = @_;
-
-    join "\n\t- ", map { '[' . join(', ', @$_) . ']' } @sets;
+    join "\n\t- ", map { '[' . join(', ', @$_) . ']' } @_;
 }
 
 1;

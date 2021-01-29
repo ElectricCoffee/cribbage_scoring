@@ -19,7 +19,7 @@ TODO: Expand this code to make it more flexible.
 sub from_str {
     my ($class, $str) = @_;
     my @parts = split( /\+/, $str);
-    
+
     if (@parts < 2) {
         croak 'Input must consist of a hand + a starter, found less than that (', scalar @parts, ')';
     } elsif(@parts > 2) {
@@ -42,7 +42,7 @@ Checks if a set contains a flush and extracts a copy of it.
 If no flush is present, then an empty list is returned.
 =cut
 sub check_flush {
-    my $self = shift;
+    my ($self) = @_;
 
     my @hand = $self->hand->@*;
     my $starter = $self->starter;
@@ -63,7 +63,7 @@ Checks to see if the hand has a Nob in it.
 I.e. a Jack of the same suit as the starter.
 =cut
 sub check_nob {
-    my $self = shift;
+    my ($self) = @_;
     my @hand = $self->hand->@*;
     my $starter = $self->starter;
 
@@ -75,7 +75,7 @@ Goes through the entire hand and the starter and checks it for all point scoring
 It then returns a hash containing its findings
 =cut
 sub check {
-    my $self = shift;
+    my ($self) = @_;
 
     my @fifteens;
     my @pairs;
